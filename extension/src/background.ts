@@ -109,6 +109,13 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   }
 });
 
+// Service workers can be started independently of the browser lifecycle event
+// listeners (including when Chrome restores an existing profile). Reconcile
+// persisted pending donations whenever this worker is activated.
+if (chrome.runtime?.id) {
+  resumePendingTransactions();
+}
+
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== 'local' || !(PENDING_STORAGE_KEY in changes)) return;
   const pending = changes[PENDING_STORAGE_KEY].newValue;

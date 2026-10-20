@@ -151,7 +151,7 @@ test.describe("Projects page", () => {
   test("clicking a project card navigates to its detail page", async ({ page }) => {
     await mockApi(page);
     await page.goto("/projects");
-    await page.getByText(MOCK_PROJECT.name).click();
+    await page.getByRole("link", { name: new RegExp(MOCK_PROJECT.name) }).click();
     await expect(page).toHaveURL(new RegExp(`/projects/${MOCK_PROJECT_ID}`));
   });
 });

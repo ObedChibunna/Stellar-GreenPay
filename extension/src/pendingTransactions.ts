@@ -94,8 +94,16 @@ export async function checkPendingDonations(): Promise<PendingDonation[]> {
 
   await Promise.all(
     pending.map(async (tx) => {
+      // A transaction that has already outlived Stellar's transaction window
+      // can be discarded without waiting on a potentially unreachable Horizon
+      // endpoint during service-worker startup.
+      if (Date.now() - tx.createdAt > PENDING_TTL_MS) {
+        settled.add(tx.hash);
+        return;
+      }
+
       const status = await lookupTxStatus(tx.hash);
-      if (status !== 'pending' || Date.now() - tx.createdAt > PENDING_TTL_MS) {
+      if (status !== 'pending') {
         settled.add(tx.hash);
       }
     })

@@ -5,7 +5,7 @@ RUN addgroup -S greenpay && adduser -S greenpay -G greenpay
 
 WORKDIR /app
 
-COPY --chown=greenpay:greenpay package*.json ./
+COPY --chown=greenpay:greenpay package*.json .npmrc ./
 RUN npm ci && chown -R greenpay:greenpay /app/node_modules
 
 COPY --chown=greenpay:greenpay . .
@@ -19,7 +19,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json .npmrc ./
 RUN npm ci --omit=dev
 
 # 2. Production Runner Stage
@@ -32,7 +32,7 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Copy package files and production dependencies
-COPY --chown=greenpay:greenpay package*.json ./
+COPY --chown=greenpay:greenpay package*.json .npmrc ./
 COPY --from=builder --chown=greenpay:greenpay /app/node_modules ./node_modules
 
 # Copy source code

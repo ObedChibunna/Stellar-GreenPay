@@ -26,12 +26,13 @@ test.describe("GreenPay Extension E2E - Donate Flow", () => {
 
     let foundId = "";
 
-    // Attempt to find extension ID
+    // Manifest V3 extensions expose their background as a service worker.
+    // Manifest V2 background pages are not reported for this extension.
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
-        const bgPages = await context.backgroundPages();
-        if (bgPages && bgPages.length > 0) {
-          const url = bgPages[0].url();
+        const serviceWorkers = context.serviceWorkers();
+        if (serviceWorkers.length > 0) {
+          const url = serviceWorkers[0].url();
           const match = url.match(/chrome-extension:\/\/([a-z]+)\//);
           if (match) {
             foundId = match[1];
@@ -134,7 +135,7 @@ test.describe("GreenPay Extension E2E - Donate Flow", () => {
     }
   });
 
-  test("should display project list on popup open", async () => {
+  test("should show the discovery empty state when no project is selected", async () => {
     const context = await setupExtension();
     const page = await context.newPage();
 
@@ -143,15 +144,14 @@ test.describe("GreenPay Extension E2E - Donate Flow", () => {
       const projectList = page.locator("#project-list");
       await expect(projectList).toBeVisible();
 
-      const projectItems = page.locator(".project-item");
-      const count = await projectItems.count();
-      expect(count).toBeGreaterThan(0);
+      await expect(page.locator(".empty-state")).toBeVisible();
+      await expect(page.locator("#find-project-btn")).toBeVisible();
     } finally {
       await context.close();
     }
   });
 
-  test("should select a project and show donation form", async () => {
+  test("should show the project search and donation form", async () => {
     const context = await setupExtension();
     const page = await context.newPage();
 
@@ -162,6 +162,7 @@ test.describe("GreenPay Extension E2E - Donate Flow", () => {
 
       const donationForm = page.locator(".donate-section");
       await expect(donationForm).toBeVisible();
+      await expect(page.locator("#project-search")).toBeVisible();
     } finally {
       await context.close();
     }

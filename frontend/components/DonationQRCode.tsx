@@ -90,12 +90,14 @@ const DonationQRCode = React.forwardRef<DonationQRCodeHandle, DonationQRCodeProp
         ref={onCanvasRef}
         className="donation-qr-wrapper"
         style={{ display: "inline-block", textAlign: "center" }}
+        role="group"
         aria-label={`QR code to donate to ${projectName}`}
       >
         <div style={{ display: "inline-block", padding: "8px", background: "#ffffff", borderRadius: "12px" }}>
           <QRCodeCanvas
             value={stellarUri}
             size={size}
+            title={`QR code to donate to ${projectName}`}
             level="H"
             includeMargin={true}
             imageSettings={{

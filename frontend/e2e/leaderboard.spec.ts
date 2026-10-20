@@ -68,7 +68,7 @@ test.describe("Leaderboard page", () => {
     await mockApi(page);
     await page.goto("/leaderboard");
 
-    const rows = page.locator(".space-y-2 > div");
+    const rows = page.locator('a[href^="/donors/"]');
     await expect(rows.first()).toBeVisible();
 
     const amounts = await rows.evaluateAll((els) =>

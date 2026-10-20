@@ -88,19 +88,18 @@ jobs:
           }
           NODE
 
-      - name: Lint manifests with web-ext
-        run: |
-          CHROME_TMP=$(mktemp -d)
-          cp manifest.json "$CHROME_TMP/manifest.json"
-          npx web-ext lint --source-dir "$CHROME_TMP" --self-hosted
-
-          FIREFOX_TMP=$(mktemp -d)
-          cp manifest.firefox.json "$FIREFOX_TMP/manifest.json"
-          npx web-ext lint --source-dir "$FIREFOX_TMP" --self-hosted
-
       - run: npm test
 
       - run: npm run build
+
+      - name: Lint Firefox package with web-ext
+        run: |
+          FIREFOX_TMP=$(mktemp -d)
+          cp manifest.firefox.json "$FIREFOX_TMP/manifest.json"
+          cp popup.html "$FIREFOX_TMP/popup.html"
+          cp -R icons "$FIREFOX_TMP/icons"
+          cp -R dist "$FIREFOX_TMP/dist-firefox"
+          npx web-ext lint --source-dir "$FIREFOX_TMP" --self-hosted
 
       - name: Install Chromium for extension E2E
         run: npx playwright install --with-deps chromium
